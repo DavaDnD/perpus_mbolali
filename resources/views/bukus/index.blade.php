@@ -7,7 +7,7 @@
     <div class="card-header d-flex justify-content-between align-items-center pb-3">
         <!-- Kiri: Judul + Tombol (stacked) -->
         <div class="d-flex flex-column">
-            <h3 class="card-title mb-2 pb-2">Daftar Bukussss</h3>
+            <h3 class="card-title mb-2 pb-2">Daftar Buku</h3>
             <a href="{{ route('bukus.create') }}" class="btn btn-success btn-sm">
                 <i class="fas fa-plus"></i>  Tambah Data
             </a>
