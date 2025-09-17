@@ -8,6 +8,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
+
+        .custom-table tbody tr {
+            border-bottom: 2px solid #dee2e6;
+        }
+
         body {
             background-color: #f8f9fa;
         }
@@ -29,9 +34,41 @@
         .content-wrapper {
             padding: 20px;
         }
+
+        .custom-pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #fff;
+            border-radius: 50px;
+            padding: 10px 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            gap: 10px;
+        }
+
+        .custom-pagination .page-item { list-style: none; }
+
+        .custom-pagination .page-link {
+            border: none !important;
+            background: transparent !important;
+            color: #333 !important;
+            font-size: 16px;
+            border-radius: 50%;
+            padding: 8px 14px;
+            transition: all 0.3s ease;
+        }
+
+        .custom-pagination .page-link:hover { background: #f2f2f2 !important; }
+
+        .custom-pagination .active .page-link {
+            background: #111 !important;
+            color: #fff !important;
+            border-radius: 50%;
+        }
     </style>
 </head>
 <body>
+
 <div class="d-flex">
     <!-- Sidebar -->
     <div class="sidebar p-3">
@@ -64,10 +101,10 @@
                 </a>
             </li>
 
-            <!-- 4. Kategori (dengan submenu) -->
+            <!-- 4. Kategori -->
             <li>
                 <a class="nav-link d-flex justify-content-between align-items-center
-                          {{ request()->is('kategoris*') || request()->is('sub_kategoris*') ? 'active' : '' }}"
+                      {{ request()->is('kategoris*') || request()->is('sub_kategoris*') ? 'active' : '' }}"
                    data-bs-toggle="collapse" href="#menuKategori" role="button"
                    aria-expanded="{{ request()->is('kategoris*') || request()->is('sub_kategoris*') ? 'true' : 'false' }}"
                    aria-controls="menuKategori">
@@ -106,7 +143,7 @@
                 </a>
             </li>
 
-            <!-- Penerbit -->
+            <!-- 7. Penerbit -->
             <li>
                 <a href="{{ route('penerbits.index') }}"
                    class="nav-link {{ request()->is('penerbits*') ? 'active' : '' }}">
@@ -114,9 +151,22 @@
                 </a>
             </li>
 
+            <!-- ✅ Khusus Admin & Officer -->
+            @if(Auth::check() && in_array(Auth::user()->role, ['Admin','Officer']))
+                <li class="mt-3">
+                    <hr class="border-secondary">
+                </li>
+                <li>
+                    <a href="{{ route('admin.users') }}"
+                       class="nav-link {{ request()->is('admin/users*') ? 'active' : '' }}">
+                        <i class="fas fa-users-cog me-2"></i> Kelola Pengguna
+                    </a>
+                </li>
+            @endif
 
         </ul>
     </div>
+
 
 
 
@@ -130,13 +180,30 @@
                 </a>
                 <div class="d-flex">
                     @auth
-                        <span class="me-3">Halo, {{ Auth::user()->name }}</span>
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn btn-outline-danger btn-sm">
-                                <i class="fas fa-sign-out-alt"></i> Logout
-                            </button>
-                        </form>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="{{ Auth::user()->photo ? asset('storage/' . Auth::user()->photo) : asset('images/default.png') }}"
+                                     alt="Profile" class="rounded-circle me-2" width="100" height="100">
+                                <span>{{ Auth::user()->name }}</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" href="{{ route('profile.edit') }}">
+                                        <i class="bi bi-person-circle me-2"></i> Akun Saya
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item text-danger d-flex align-items-center">
+                                            <i class="bi bi-box-arrow-right me-2"></i> Logout
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
                     @endauth
                 </div>
             </div>

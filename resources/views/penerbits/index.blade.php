@@ -3,7 +3,8 @@
 @section('content')
     <div class="card">
 
-        <div class="card-header d-flex justify-content-between align-items-center pb-3">
+        <div class="card-header d-flex justify-content-between align-items-center pb-3"
+             style="background-color: #dee2e6;">
             <!-- Kiri: Judul + Tombol (stacked) -->
             <div class="d-flex flex-column">
                 <h3 class="card-title mb-2 pb-2">Daftar Penerbit</h3>
@@ -13,8 +14,8 @@
         </div>
 
         <div class="card-body">
-        <table class="table table-bordered">
-            <thead>
+            <table class="table table-bordered datatable custom-table table-striped">
+                <thead class="table-dark">
             <tr>
                 <th>Nama</th>
                 <th>Alamat</th>
@@ -30,7 +31,7 @@
                     <td>{{ $penerbit->alamat }}</td>
                     <td>{{ $penerbit->no_telepon }}</td>
                     <td>{{ $penerbit->email }}</td>
-                    <td>
+                    <td class="text-center">
                         <a href="{{ route('penerbits.edit', $penerbit->id) }}" class="btn btn-success btn-sm"><i class="fas fa-edit"></i></a>
                         <form action="{{ route('penerbits.destroy', $penerbit->id) }}" method="POST" class="d-inline">
                             @csrf @method('DELETE')

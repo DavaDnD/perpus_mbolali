@@ -6,8 +6,9 @@
 
     <div class="card">
 
-        <div class="card-header d-flex justify-content-between align-items-center pb-3">
-            <!-- Kiri: Judul + Tombol (stacked) -->
+        <div class="card-header d-flex justify-content-between align-items-center pb-3"
+             style="background-color: #dee2e6;">
+
             <div class="d-flex flex-column">
                 <h3 class="card-title mb-2 pb-2">Daftar Eksemplar</h3>
                 <a href="{{ route('bukuitems.create') }}" class="btn btn-success btn-sm">
@@ -24,14 +25,14 @@
                     <input type="text" id="search-item"
                            class="form-control border-0 shadow-sm rounded-end-pill"
                            placeholder="Cari Eksemplar..."
-                           style="background-color: #f0f2f5;">
+                           style="background-color: #f8f9fa; color: #212529;">
                 </div>
             </div>
         </div>
 
         <div class="card-body">
-            <table class="table table-bordered datatable">
-                <thead>
+            <table class="table table-bordered datatable custom-table table-striped">
+                <thead class="table-dark">
                 <tr>
                     <th>ID</th>
                     <th>Buku</th>
@@ -49,7 +50,7 @@
                         <td>{{ $item->rak->nama }}</td>
                         <td>{{ $item->kondisi }}</td>
                         <td>{{ $item->status }}</td>
-                        <td>
+                        <td class="text-center">
                             <a href="{{ route('bukuitems.show', $item->id) }}" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>
                             <a href="{{ route('bukuitems.edit', $item->id) }}" class="btn btn-success btn-sm"><i class="fas fa-edit"></i></a>
                             <form action="{{ route('bukuitems.destroy', $item->id) }}" method="POST" class="d-inline">
@@ -62,10 +63,10 @@
                 </tbody>
             </table>
 
-            <!-- Pagination -->
             <div class="d-flex justify-content-center mt-4">
-                {{ $bukuitems->links() }}
+                {{ $bukuitems->links('vendor.pagination.bootstrap-5') }}
             </div>
+
 
 
         </div>

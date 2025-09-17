@@ -9,34 +9,58 @@ use App\Http\Controllers\SubKategoriController;
 use App\Http\Controllers\RakController;
 use App\Http\Controllers\LokasiRakController;
 use App\Http\Controllers\PenerbitController;
+use App\Http\Controllers\AdminController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
+// Semua role bisa akses dashboard
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+// Profile → semua role bisa akses
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/bukus/search', [BukuController::class, 'search'])->name('bukus.search');
-Route::get('/bukuitems/search', [App\Http\Controllers\BukuItemController::class, 'search'])
-    ->name('bukuitems.search');
+// ==========================
+// 📌 Member (default user)
+// ==========================
+Route::middleware(['auth'])->group(function () {
+    Route::get('/bukus/search', [BukuController::class, 'search'])->name('bukus.search');
+    Route::get('/bukuitems/search', [BukuItemController::class, 'search'])->name('bukuitems.search');
+    Route::get('/bukus/{id_buku}/items', [BukuItemController::class, 'searchByBuku'])->name('bukuitems.searchByBuku');
 
-Route::resource('bukus', BukuController::class)->middleware(['auth','verified']);
-Route::resource('bukuitems', BukuItemController::class)->middleware(['auth','verified']);
-Route::get('/bukus/{id_buku}/items', [BukuItemController::class, 'searchByBuku'])
-    ->name('bukuitems.search');
+    // hanya bisa lihat (index + show)
+    Route::resource('bukus', BukuController::class)->only(['index','show']);
+    Route::resource('bukuitems', BukuItemController::class)->only(['index','show']);
+});
 
-Route::resource('kategoris', KategoriController::class)->middleware(['auth','verified']);
-Route::resource('sub_kategoris', SubKategoriController::class)->middleware(['auth','verified']);
-Route::resource('raks', RakController::class)->middleware(['auth','verified']);
-Route::resource('lokasis', LokasiRakController::class)->middleware(['auth','verified']);
-Route::resource('penerbits', PenerbitController::class)->middleware(['auth','verified']);
+// ==========================
+// 📌 Officer + Admin
+// ==========================
+Route::middleware(['auth','isOfficerOrAdmin'])->group(function () {
+    Route::resource('bukus', BukuController::class)->except(['index','show']);
+    Route::resource('bukuitems', BukuItemController::class)->except(['index','show']);
+    Route::resource('kategoris', KategoriController::class);
+    Route::resource('sub_kategoris', SubKategoriController::class);
+    Route::resource('raks', RakController::class);
+    Route::resource('lokasis', LokasiRakController::class);
+    Route::resource('penerbits', PenerbitController::class);
+});
+
+// ==========================
+// 📌 Admin Only
+// ==========================
+Route::middleware(['auth','isAdmin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/users', [AdminController::class, 'users'])->name('users');
+    Route::get('/users/{user}/edit', [AdminController::class, 'editUser'])->name('users.edit');
+    Route::put('/users/{user}', [AdminController::class, 'updateUser'])->name('users.update');
+    Route::delete('/users/{user}', [AdminController::class, 'destroyUser'])->name('users.destroy');
+});
 
 require __DIR__.'/auth.php';
