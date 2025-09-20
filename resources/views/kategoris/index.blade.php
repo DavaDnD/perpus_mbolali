@@ -27,12 +27,16 @@
                     <td>{{ $kategori->id }}</td>
                     <td>{{ $kategori->nama }}</td>
                     <td class="text-center">
+                        @can('update', $kategori)
                         <a href="{{ route('kategoris.edit', $kategori->id) }}" class="btn btn-success btn-sm"><i class="fas fa-edit"></i></a>
-                        <form action="{{ route('kategoris.destroy', $kategori->id) }}" method="POST" style="display:inline">
+                        @endcan
+                            @can('delete', $kategori)
+                            <form action="{{ route('kategoris.destroy', $kategori->id) }}" method="POST" style="display:inline">
                             @csrf @method('DELETE')
                             <button type="submit" class="btn btn-danger"
                                     onclick="return confirm('Hapus kategori ini?')"><i class="fas fa-trash"></i></button>
                         </form>
+                            @endcan
                     </td>
                 </tr>
             @endforeach

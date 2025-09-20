@@ -49,11 +49,19 @@
                         <td>{{ $buku->penerbit->nama }}</td>
                         <td class="text-center items-center">
                             <a href="{{ route('bukus.show', $buku->id) }}" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>
+
+                            @can('update', $buku)
                             <a href="{{ route('bukus.edit', $buku->id) }}" class="btn btn-success btn-sm"><i class="fas fa-edit"></i></a>
+                            @endcan
+                            @can('delete', $buku)
                             <form action="{{ route('bukus.destroy', $buku->id) }}" method="POST" class="d-inline">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin hapus?')"><i class="fas fa-trash"></i></button>
                             </form>
+                            @endcan
+                            <a href="{{ route('bukuitems.searchByBuku', $buku->id) }}" class="btn btn-sm btn-dark">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </a>
                         </td>
                     </tr>
                 @endforeach

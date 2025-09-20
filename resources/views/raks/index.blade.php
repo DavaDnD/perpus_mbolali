@@ -38,11 +38,15 @@
                     <td>{{ $rak->lokasi->ruang ?? '-' }}</td>
                     <td>{{ $rak->kategori->nama ?? '-' }}</td>
                     <td class="text-center">
+                        @can('update', $rak)
                         <a href="{{ route('raks.edit', $rak->id) }}" class="btn btn-success btn-sm"><i class="fas fa-edit"></i></a>
+                        @endcan
+                            @can('delete', $rak)
                         <form action="{{ route('raks.destroy', $rak->id) }}" method="POST" style="display:inline;">
                             @csrf @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Hapus rak ini?')"><i class="fas fa-trash"></i></button>
                         </form>
+                            @endcan
                     </td>
                 </tr>
             @endforeach

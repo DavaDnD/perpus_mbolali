@@ -32,12 +32,16 @@
                     <td>{{ $penerbit->no_telepon }}</td>
                     <td>{{ $penerbit->email }}</td>
                     <td class="text-center">
+                        @can('update', $penerbit)
                         <a href="{{ route('penerbits.edit', $penerbit->id) }}" class="btn btn-success btn-sm"><i class="fas fa-edit"></i></a>
+                        @endcan
+                            @can('delete', $penerbit)
                         <form action="{{ route('penerbits.destroy', $penerbit->id) }}" method="POST" class="d-inline">
                             @csrf @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm"
                                     onclick="return confirm('Yakin hapus penerbit ini?')"><i class="fas fa-trash"></i></button>
                         </form>
+                            @endcan
                     </td>
                 </tr>
             @endforeach

@@ -25,11 +25,6 @@
                 <tr><th>Sub Kategori</th><td>{{ $buku->subKategori->sub_kategori }}</td></tr>
             </table>
             <a href="{{ route('bukus.index') }}" class="btn btn-secondary">Kembali</a>
-            <a href="{{ route('bukuitems.search', $buku->id) }}" class="btn btn-sm btn-primary">
-                Cari Eksemplar
-            </a>
-
-
         </div>
     </div>
 @endsection

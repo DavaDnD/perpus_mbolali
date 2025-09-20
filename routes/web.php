@@ -38,19 +38,22 @@ Route::middleware(['auth'])->group(function () {
     // hanya bisa lihat (index + show)
     Route::resource('bukus', BukuController::class)->only(['index','show']);
     Route::resource('bukuitems', BukuItemController::class)->only(['index','show']);
+    Route::resource('kategoris', KategoriController::class)->only(['index','show']);
+    Route::resource('sub_kategoris', SubKategoriController::class)->only(['index','show']);
+    Route::resource('raks', RakController::class)->only(['index','show']);
+    Route::resource('lokasis', LokasiRakController::class)->only(['index','show']);
+    Route::resource('penerbits', PenerbitController::class)->only(['index','show']);
 });
 
-// ==========================
 // 📌 Officer + Admin
-// ==========================
 Route::middleware(['auth','isOfficerOrAdmin'])->group(function () {
     Route::resource('bukus', BukuController::class)->except(['index','show']);
     Route::resource('bukuitems', BukuItemController::class)->except(['index','show']);
-    Route::resource('kategoris', KategoriController::class);
-    Route::resource('sub_kategoris', SubKategoriController::class);
-    Route::resource('raks', RakController::class);
-    Route::resource('lokasis', LokasiRakController::class);
-    Route::resource('penerbits', PenerbitController::class);
+    Route::resource('kategoris', KategoriController::class)->except(['index','show']);
+    Route::resource('sub_kategoris', SubKategoriController::class)->except(['index','show']);
+    Route::resource('raks', RakController::class)->except(['index','show']);
+    Route::resource('lokasis', LokasiRakController::class)->except(['index','show']);
+    Route::resource('penerbits', PenerbitController::class)->except(['index','show']);
 });
 
 // ==========================

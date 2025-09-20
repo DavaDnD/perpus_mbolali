@@ -52,11 +52,15 @@
                         <td>{{ $item->status }}</td>
                         <td class="text-center">
                             <a href="{{ route('bukuitems.show', $item->id) }}" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>
+                            @can('update', $item)
                             <a href="{{ route('bukuitems.edit', $item->id) }}" class="btn btn-success btn-sm"><i class="fas fa-edit"></i></a>
+                            @endcan
+                            @can('delete', $item)
                             <form action="{{ route('bukuitems.destroy', $item->id) }}" method="POST" class="d-inline">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin hapus?')"><i class="fas fa-trash"></i></button>
                             </form>
+                            @endcan
                         </td>
                     </tr>
                 @endforeach

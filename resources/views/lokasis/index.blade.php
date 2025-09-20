@@ -19,7 +19,9 @@
             <tr>
                 <th>ID</th>
                 <th>Ruang</th>
+                @unless(Auth::user()->role === 'Member')
                 <th>Aksi</th>
+                @endunless
             </tr>
             </thead>
             <tbody>
@@ -27,13 +29,19 @@
                 <tr>
                     <td>{{ $lokasi->id }}</td>
                     <td>{{ $lokasi->ruang }}</td>
+                    @unless(Auth::user()->role === 'Member')
                     <td class="text-center">
+                        @can('update', $lokasi)
                         <a href="{{ route('lokasis.edit', $lokasi->id) }}" class="btn btn-success btn-sm"><i class="fas fa-edit"></i></a>
-                        <form action="{{ route('lokasis.destroy', $lokasi->id) }}" method="POST" style="display:inline;">
+                        @endcan
+                            @can('delete', $lokasi)
+                            <form action="{{ route('lokasis.destroy', $lokasi->id) }}" method="POST" style="display:inline;">
                             @csrf @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Hapus lokasi ini?')"><i class="fas fa-trash"></i></button>
                         </form>
+                            @endcan
                     </td>
+                    @endunless
                 </tr>
             @endforeach
             </tbody>
