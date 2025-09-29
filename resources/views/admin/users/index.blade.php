@@ -47,7 +47,6 @@
 @endsection
 
 @push('scripts')
-    ```html
     <script>
         (function(){
             const csrf = "{{ csrf_token() }}";
@@ -67,28 +66,13 @@
             }
 
             function renderResponse(data) {
-                if (typeof data === "object" && data.rows !== undefined) {
-                    // berarti server memang sudah return HTML string di "rows"
+                if (data && typeof data === 'object' && data.rows) {
                     $body.innerHTML = data.rows;
-                    $pagination.innerHTML = data.pagination;
-                    attachRowHandlers();
-                    toggleButtons();
-                } else if (Array.isArray(data)) {
-                    // kalau ternyata JSON array of users
-                    $body.innerHTML = data.map(user => `
-            <tr>
-                <td><input type="checkbox" class="select-user" value="${user.id}"></td>
-                <td>${user.nama}</td>
-                <td>${user.email}</td>
-                <td>${user.role}</td>
-            </tr>
-        `).join('');
-                    $pagination.innerHTML = ''; // pagination optional
+                    $pagination.innerHTML = data.pagination || '';
                     attachRowHandlers();
                     toggleButtons();
                 } else {
-                    // fallback → treat as HTML
-                    $body.innerHTML = data;
+                    $body.innerHTML = '<tr><td colspan="4">Failed to load</td></tr>';
                 }
             }
 
@@ -98,27 +82,32 @@
                     if (q === null) q = $search.value.trim();
                     if (q !== '') params.q = q;
                     const u = qs(url, params);
-                    const res = await fetch(u, { headers: { 'X-Requested-With': 'XMLHttpRequest'} });
 
-                    let data;
-                    const ct = res.headers.get("content-type");
-                    if (ct && ct.includes("application/json")) {
-                        data = await res.json();
-                    } else {
-                        data = await res.text();
-                    }
+                    const res = await fetch(u, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    const data = await res.json();
                     renderResponse(data);
                 } catch (err) {
                     console.error(err);
+                    $body.innerHTML = '<tr><td colspan="4" class="text-center text-danger">Error loading</td></tr>';
                 }
             }
 
-            // debounce
-            function debounce(fn, delay=220){ let t; return (...args)=>{ clearTimeout(t); t = setTimeout(()=>fn(...args), delay); }; }
+            function debounce(fn, delay=220){
+                let t;
+                return (...args)=>{
+                    clearTimeout(t);
+                    t = setTimeout(()=>fn(...args), delay);
+                };
+            }
 
-            $search.addEventListener('keyup', debounce(()=> fetchUsers(null, $search.value), 220));
+            $search.addEventListener('keyup', debounce(()=> fetchUsers(), 220));
 
-            // pagination links (event delegation)
             document.addEventListener('click', function(e){
                 const a = e.target.closest('#user-pagination a');
                 if (a) {
@@ -153,7 +142,6 @@
 
             $btnRefresh.addEventListener('click', ()=> fetchUsers());
 
-            // New modal
             $btnNew.addEventListener('click', ()=> {
                 const modal = new bootstrap.Modal(document.getElementById('modalNewUser'));
                 document.getElementById('form-new-user').reset();
@@ -176,17 +164,14 @@
                     alert(data.message || 'Created');
                 } catch (err) {
                     alert(err?.message || 'Error creating user');
-                    console.error(err);
                 }
             });
 
-            // Edit
             $btnEdit.addEventListener('click', async function(){
                 const ids = getSelectedIds();
-                if (ids.length !== 1) return alert('Select exactly one user to edit.');
-                const id = ids[0];
+                if (ids.length !== 1) return alert('Select exactly one user');
                 try {
-                    const res = await fetch("{{ url('admin/users') }}/" + id);
+                    const res = await fetch("{{ url('admin/users') }}/" + ids[0]);
                     const user = await res.json();
                     document.getElementById('edit-user-id').value = user.id;
                     document.getElementById('edit-name').value = user.name;
@@ -194,11 +179,9 @@
                     document.getElementById('edit-role').value = user.role;
                     document.getElementById('edit-password').value = '';
                     document.getElementById('edit-password_confirmation').value = '';
-                    const modal = new bootstrap.Modal(document.getElementById('modalEditUser'));
-                    modal.show();
+                    new bootstrap.Modal(document.getElementById('modalEditUser')).show();
                 } catch (err) {
-                    alert('Failed to fetch user data');
-                    console.error(err);
+                    alert('Failed to fetch user');
                 }
             });
 
@@ -219,11 +202,9 @@
                     alert(data.message || 'Updated');
                 } catch (err) {
                     alert(err?.error || err?.message || 'Update failed');
-                    console.error(err);
                 }
             });
 
-            // Bulk delete
             $btnDelete.addEventListener('click', async function(){
                 const ids = getSelectedIds();
                 if (!ids.length) return alert('Select users first');
@@ -240,16 +221,11 @@
                     alert(data.message || 'Deleted');
                 } catch (err) {
                     alert(err?.error || 'Delete failed');
-                    console.error(err);
                 }
             });
 
-            // initial
             attachRowHandlers();
             toggleButtons();
-
         })();
     </script>
-    ```
-
 @endpush

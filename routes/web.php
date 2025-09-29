@@ -10,7 +10,6 @@ use App\Http\Controllers\RakController;
 use App\Http\Controllers\LokasiRakController;
 use App\Http\Controllers\PenerbitController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\Admin\UserController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -54,7 +53,7 @@ Route::middleware(['auth'])->group(function () {
 // 📌 Officer + Admin
 // ==========================
 Route::middleware(['auth','isOfficerOrAdmin'])->group(function () {
-    // CRUD koleksi
+// CRUD koleksi
     Route::resource('bukus', BukuController::class)->except(['index','show']);
     Route::resource('bukuitems', BukuItemController::class)->except(['index','show']);
     Route::resource('kategoris', KategoriController::class)->except(['index','show']);
@@ -64,14 +63,15 @@ Route::middleware(['auth','isOfficerOrAdmin'])->group(function () {
     Route::resource('penerbits', PenerbitController::class)->except(['index','show']);
 
     // Kelola User (lihat & hapus user)
-    Route::prefix('admin')->name('admin.')->group(function () {
-        Route::get('/users', [UserController::class, 'index'])->name('users');
-        Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
-        // <-- ADD THESE (paste di sana) -->
-        Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
-        Route::post('/users', [UserController::class, 'store'])->name('users.store');
-        Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
-        Route::delete('/users', [UserController::class, 'destroySelected'])->name('users.destroySelected');
+         Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/users', [AdminController::class, 'users'])->name('users'); // Ganti method juga
+
+        Route::delete('/users/destroy-selected', [AdminController::class, 'destroySelected'])->name('users.destroySelected');
+        Route::post('/users', [AdminController::class, 'store'])->name('users.store');
+
+        Route::get('/users/{user}', [AdminController::class, 'show'])->name('users.show');
+        Route::put('/users/{user}', [AdminController::class, 'update'])->name('users.update');
+        Route::delete('/users/{user}', [AdminController::class, 'destroy'])->name('users.destroy');
     });
 });
 
