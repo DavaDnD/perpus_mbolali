@@ -47,6 +47,10 @@
                             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Hapus rak ini?')"><i class="fas fa-trash"></i></button>
                         </form>
                             @endcan
+
+                            <a href="{{ route('bukus.searchByRak', $rak->id) }}" class="btn btn-sm btn-dark">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </a>
                     </td>
                 </tr>
             @endforeach

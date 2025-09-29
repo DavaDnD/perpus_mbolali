@@ -119,6 +119,7 @@ class BukuItemController extends Controller
                     'rak'        => $it->rak ? ['id' => $it->rak->id, 'nama' => $it->rak->nama] : null,
                     'kondisi'    => $it->kondisi,
                     'status'     => $it->status,
+                    'actions' => view('bukuitems.partials.item_actions', compact('it'))->render(),
                 ];
             });
 

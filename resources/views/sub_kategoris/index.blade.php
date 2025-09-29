@@ -39,6 +39,10 @@
                                     onclick="return confirm('Hapus sub kategori ini?')"><i class="fas fa-trash"></i></button>
                         </form>
                             @endcan
+                            <a href="{{ route('bukus.searchBySubKategori', $sub->id) }}" class="btn btn-sm btn-dark">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </a>
+
                     </td>
                 </tr>
             @endforeach

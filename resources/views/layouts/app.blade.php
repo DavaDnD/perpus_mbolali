@@ -76,7 +76,7 @@
     <!-- Sidebar -->
     <div class="sidebar p-3">
         <h4 class="text-white mb-4">
-            <i class="fas fa-book-reader"></i> Perpus
+            <i class="fas fa-book-reader"></i> E-Library
         </h4>
         <ul class="nav nav-pills flex-column mb-auto">
 
@@ -187,7 +187,7 @@
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button"
                                data-bs-toggle="dropdown" aria-expanded="false">
                                 <img src="{{ Auth::user()->photo ? asset('storage/' . Auth::user()->photo) : asset('images/default.png') }}"
-                                     alt="Profile" class="rounded-circle me-2" width="100" height="100">
+                                     alt="Profile" class="rounded-circle me-2" width="50" height="50">
                                 <span>{{ Auth::user()->name }}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
@@ -245,22 +245,8 @@
                             <td>${b.id}</td>
                             <td>${b.judul}</td>
                             <td>${b.penerbit ?? '-'}</td>
-                            <td>
-    <a href="/bukus/${b.id}" class="btn btn-info btn-sm">
-        <i class="fas fa-eye"></i>
-    </a>
-    <a href="/bukus/${b.id}/edit" class="btn btn-success btn-sm">
-        <i class="fas fa-edit"></i>
-    </a>
-    <form action="/bukus/${b.id}" method="POST" style="display:inline;">
-        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-        <input type="hidden" name="_method" value="DELETE">
-        <button type="submit" class="btn btn-danger btn-sm"
-            onclick="return confirm('Yakin hapus data ini?')">
-            <i class="fas fa-trash"></i>
-        </button>
-    </form>
-</td>
+                            <td class="text-center items-center">
+                                 ${b.actions}</td>
 
                         </tr>
                     `;
@@ -327,21 +313,7 @@
                             <td>${rakNama}</td>
                             <td>${kondisi}</td>
                             <td>${status}</td>
-                            <td>
-                              <a href="/bukuitems/${item.id}" class="btn btn-info btn-sm" title="Lihat">
-                                <i class="fas fa-eye"></i>
-                              </a>
-                              <a href="/bukuitems/${item.id}/edit" class="btn btn-success btn-sm" title="Edit">
-                                <i class="fas fa-edit"></i>
-                              </a>
-                              <form action="/bukuitems/${item.id}" method="POST" class="d-inline">
-                                <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                <input type="hidden" name="_method" value="DELETE">
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin hapus data ini?')" title="Hapus">
-                                  <i class="fas fa-trash"></i>
-                                </button>
-                              </form>
-                            </td>
+                            <td class="text-center items-center">${item.actions}</td>
                           </tr>`;
                         });
 

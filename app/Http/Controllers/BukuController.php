@@ -99,12 +99,53 @@ class BukuController extends Controller
                     'pengarang' => $b->pengarang,
                     'tahun_terbit' => $b->tahun_terbit,
                     'penerbit' => $b->penerbit ? $b->penerbit->nama : '-',
+                    'actions' => view('bukus.partials.buku_actions', compact('b'))->render()
+
                 ];
             });
 
         return response()->json($bukus);
     }
 
+    public function searchByKategori($id)
+    {
+        // ambil semua sub kategori dalam kategori tertentu
+        $subKategoris = \App\Models\SubKategori::where('id_kategori', $id)->get();
+
+        return view('sub_kategoris.index', compact('subKategoris'));
+    }
+
+    public function searchBySubKategori($id)
+    {
+        // ambil semua buku dalam sub kategori tertentu
+        $bukus = \App\Models\Buku::with('penerbit','subKategori')
+            ->where('id_sub_kategori', $id)
+            ->paginate(10);
+
+        return view('bukus.index', compact('bukus'));
+    }
+
+    public function searchByRak($id)
+    {
+        // ambil semua buku yang punya eksemplar di rak tertentu
+        $bukus = \App\Models\Buku::whereHas('items', function($q) use ($id) {
+            $q->where('id_rak', $id);
+        })
+            ->withCount(['items as items_in_rak' => function($q) use ($id){
+                $q->where('id_rak', $id);
+            }])
+            ->paginate(10);
+
+        return view('bukus.index', compact('bukus'));
+    }
+
+    public function searchByPenerbit($id)
+    {
+        // ambil semua buku berdasarkan penerbit
+        $bukus = \App\Models\Buku::where('id_penerbit', $id)->paginate(10);
+
+        return view('bukus.index', compact('bukus'));
+    }
 
 
 
