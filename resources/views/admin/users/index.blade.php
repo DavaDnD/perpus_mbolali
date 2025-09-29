@@ -1,41 +1,168 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container py-3">
-        <div class="mb-3 d-flex justify-content-between align-items-center">
-            <div class="d-flex gap-2">
-                <button id="btn-new-user" class="btn btn-primary"><i class="bi bi-plus-lg"></i> New User</button>
-                <button id="btn-edit-user" class="btn btn-warning" disabled><i class="bi bi-pencil"></i> Edit</button>
-                <button id="btn-delete-user" class="btn btn-danger" disabled><i class="bi bi-trash"></i> Delete</button>
-                <button id="btn-refresh" class="btn btn-light"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
-            </div>
+    <style>
+        /* Minimal custom styles untuk warna yang spesifik Microsoft 365 */
+        .bg-m365-gray { background-color: #faf9f8 !important; }
+        .border-m365 { border-color: #edebe9 !important; }
+        .text-m365-blue { color: #0078d4 !important; }
+        .bg-m365-blue { background-color: #0078d4 !important; }
+        .bg-m365-selected { background-color: #deecf9 !important; }
+        .table-hover tbody tr:hover { background-color: #f3f2f1 !important; }
+        .btn-m365 {
+            border: none;
+            background: transparent;
+            color: #323130;
+        }
+        .btn-m365:hover:not(:disabled) {
+            background-color: #f3f2f1 !important;
+            color: #323130;
+        }
+        .btn-m365:disabled { color: #a19f9d; }
+        .search-input {
+            border: none;
+            border-bottom: 1px solid #edebe9;
+            border-radius: 0;
+            padding-left: 32px;
+        }
+        .search-input:focus {
+            border-bottom-color: #0078d4;
+            box-shadow: none;
+        }
+        .status-online {
+            width: 10px;
+            height: 10px;
+            background-color: #92c353;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+        .status-offline {
+            width: 10px;
+            height: 10px;
+            background-color: #d1d1d1;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+    </style>
 
-            <div style="min-width:260px;">
-                <input id="search-user" class="form-control" placeholder="Search user by name or email...">
-            </div>
+    <div class="bg-m365-gray min-vh-100 p-4">
+        <!-- Toolbar -->
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <button id="btn-new-user" class="btn btn-m365 d-flex align-items-center gap-2">
+                <i class="bi bi-plus-lg"></i>
+                <span>New user</span>
+            </button>
+            <div class="vr"></div>
+            <button id="btn-edit-user" class="btn btn-m365 d-flex align-items-center gap-2" disabled>
+                <i class="bi bi-pencil"></i>
+                <span>Edit</span>
+            </button>
+            <button id="btn-delete-user" class="btn btn-m365 d-flex align-items-center gap-2" disabled>
+                <i class="bi bi-trash"></i>
+                <span>Delete</span>
+            </button>
+            <div class="vr"></div>
+            <button id="btn-refresh" class="btn btn-m365 d-flex align-items-center gap-2">
+                <i class="bi bi-arrow-clockwise"></i>
+                <span>Refresh</span>
+            </button>
         </div>
 
-        <div class="card">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table mb-0 align-middle">
-                        <thead class="table-light">
-                        <tr>
-                            <th style="width:48px"><input type="checkbox" id="select-all"></th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th style="width:140px">Role</th>
-                        </tr>
-                        </thead>
-                        <tbody id="user-table-body">
-                        @include('admin.users.partials.rows', ['users' => $users])
-                        </tbody>
-                    </table>
-                </div>
+        <!-- Search & Filter -->
+        <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="position-relative" style="width: 300px;">
+                <i class="bi bi-search position-absolute start-0 top-50 translate-middle-y ms-2 text-secondary"></i>
+                <input id="search-user" type="text" class="form-control search-input" placeholder="Search">
             </div>
-            <div class="card-footer">
-                <div id="user-pagination">
-                    @include('admin.users.partials.pagination', ['users' => $users])
+            <button class="btn btn-m365 d-flex align-items-center gap-2">
+                <i class="bi bi-funnel"></i>
+                <span>Add filter</span>
+            </button>
+        </div>
+
+        <!-- Count -->
+        <div class="text-secondary small mb-3">
+            <span id="user-count">194 users found</span>
+        </div>
+
+        <!-- Table -->
+        <div class="bg-white border border-m365">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="bg-m365-gray border-bottom border-m365">
+                    <tr>
+                        <th style="width: 50px;" class="py-3">
+                            <input type="checkbox" id="select-all" class="form-check-input">
+                        </th>
+                        <th class="py-3 fw-semibold">Name <i class="bi bi-arrow-down-up small opacity-50"></i></th>
+                        <th class="py-3 fw-semibold">Email <i class="bi bi-arrow-down-up small opacity-50"></i></th>
+                        <th class="py-3 fw-semibold">Role</th>
+                        <th class="py-3 fw-semibold">Status</th>
+                    </tr>
+                    </thead>
+                    <tbody id="user-table-body">
+                    @foreach($users as $index => $user)
+                        @php
+                            $colors = ['primary', 'danger', 'info', 'success', 'warning', 'secondary'];
+                            $avatarColor = $colors[$index % count($colors)];
+                            $initial = strtoupper(substr($user->name, 0, 1));
+
+                            // Role badge styling
+                            $roleBadgeClass = 'bg-light text-dark';
+                            if ($user->role === 'Admin') {
+                                $roleBadgeClass = 'bg-danger text-white';
+                            } elseif ($user->role === 'Officer') {
+                                $roleBadgeClass = 'bg-warning text-dark';
+                            }
+
+                            // Status online/offline (bisa ambil dari database atau logika lain)
+                            $isOnline = $user->is_online ?? (rand(0, 1) == 1); // contoh random
+                        @endphp
+                        <tr data-id="{{ $user->id }}" class="border-bottom border-m365">
+                            <td>
+                                <input type="checkbox" class="form-check-input select-user" value="{{ $user->id }}">
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                        <span class="bg-{{ $avatarColor }} text-white rounded-circle d-inline-flex align-items-center justify-content-center fw-semibold me-2"
+                                              style="width: 32px; height: 32px; font-size: 14px;">
+                                            {{ $initial }}
+                                        </span>
+                                    <a href="#" class="text-m365-blue text-decoration-none">{{ $user->name }}</a>
+                                </div>
+                            </td>
+                            <td class="text-secondary">
+                                {{ $user->email }}
+                                <i class="bi bi-clipboard ms-1 small" role="button" title="Copy"></i>
+                            </td>
+                            <td>
+                                <span class="badge {{ $roleBadgeClass }} border border-m365">{{ $user->role }}</span>
+                            </td>
+                            <td>
+                                <span class="{{ $isOnline ? 'status-online' : 'status-offline' }}"></span>
+                                <span class="small">{{ $isOnline ? 'Online' : 'Offline' }}</span>
+                            </td>
+                        </tr>
+                    @endforeach
+
+                    @if($users->isEmpty())
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-secondary">No users found.</td>
+                        </tr>
+                    @endif
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination Footer -->
+            <div class="border-top border-m365 p-3 bg-white">
+                <div id="user-pagination" class="d-flex justify-content-between align-items-center">
+                    <div class="text-secondary small">
+                        Showing {{ $users->firstItem() ?: 0 }} - {{ $users->lastItem() ?: 0 }} of {{ $users->total() }}
+                    </div>
+                    <div>{!! $users->links() !!}</div>
                 </div>
             </div>
         </div>
@@ -58,6 +185,40 @@
             const $btnNew = document.getElementById('btn-new-user');
             const $btnRefresh = document.getElementById('btn-refresh');
             const selectAll = document.getElementById('select-all');
+            const $userCount = document.getElementById('user-count');
+
+            async function updateOnlineStatus() {
+                try {
+                    const res = await fetch("{{ route('admin.users.onlineStatus') }}", {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        }
+                    });
+                    const data = await res.json();
+
+                    // Update status di setiap row
+                    document.querySelectorAll('tr[data-id]').forEach(row => {
+                        const userId = row.getAttribute('data-id');
+                        const statusCell = row.querySelector('td:last-child');
+                        if (statusCell && data[userId] !== undefined) {
+                            const isOnline = data[userId];
+                            const statusDot = statusCell.querySelector('span:first-child');
+                            const statusText = statusCell.querySelector('span:last-child');
+
+                            if (statusDot && statusText) {
+                                statusDot.className = isOnline ? 'status-online' : 'status-offline';
+                                statusText.textContent = isOnline ? 'Online' : 'Offline';
+                            }
+                        }
+                    });
+                } catch (err) {
+                    console.error('Failed to update online status:', err);
+                }
+            }
+
+// Update status setiap 30 detik tanpa reload tabel
+            setInterval(updateOnlineStatus, 30000);
 
             function qs(url, params) {
                 const u = new URL(url, location.origin);
@@ -69,10 +230,13 @@
                 if (data && typeof data === 'object' && data.rows) {
                     $body.innerHTML = data.rows;
                     $pagination.innerHTML = data.pagination || '';
+                    if (data.total !== undefined) {
+                        $userCount.textContent = `${data.total} users found`;
+                    }
                     attachRowHandlers();
                     toggleButtons();
                 } else {
-                    $body.innerHTML = '<tr><td colspan="4">Failed to load</td></tr>';
+                    $body.innerHTML = '<tr><td colspan="5" class="text-center text-danger py-4">Failed to load</td></tr>';
                 }
             }
 
@@ -94,9 +258,11 @@
                     renderResponse(data);
                 } catch (err) {
                     console.error(err);
-                    $body.innerHTML = '<tr><td colspan="4" class="text-center text-danger">Error loading</td></tr>';
+                    $body.innerHTML = '<tr><td colspan="5" class="text-center text-danger py-4">Error loading</td></tr>';
                 }
             }
+
+
 
             function debounce(fn, delay=220){
                 let t;
@@ -119,7 +285,13 @@
             function attachRowHandlers(){
                 document.querySelectorAll('.select-user').forEach(ch => {
                     ch.onchange = function(){
-                        if (!this.checked) selectAll.checked = false;
+                        const row = this.closest('tr');
+                        if (this.checked) {
+                            row.classList.add('bg-m365-selected');
+                        } else {
+                            row.classList.remove('bg-m365-selected');
+                            selectAll.checked = false;
+                        }
                         toggleButtons();
                     };
                 });
@@ -136,7 +308,15 @@
             }
 
             selectAll.addEventListener('change', function(){
-                document.querySelectorAll('.select-user').forEach(c=> c.checked = this.checked);
+                document.querySelectorAll('.select-user').forEach(c=> {
+                    c.checked = this.checked;
+                    const row = c.closest('tr');
+                    if (this.checked) {
+                        row.classList.add('bg-m365-selected');
+                    } else {
+                        row.classList.remove('bg-m365-selected');
+                    }
+                });
                 toggleButtons();
             });
 

@@ -72,6 +72,9 @@ Route::middleware(['auth','isOfficerOrAdmin'])->group(function () {
         Route::get('/users/{user}', [AdminController::class, 'show'])->name('users.show');
         Route::put('/users/{user}', [AdminController::class, 'update'])->name('users.update');
         Route::delete('/users/{user}', [AdminController::class, 'destroy'])->name('users.destroy');
+
+             // Route untuk online status
+             Route::get('/users/online-status', [UserController::class, 'onlineStatus'])->name('users.onlineStatus');
     });
 });
 

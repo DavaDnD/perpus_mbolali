@@ -5,6 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\IsAdmin;
 use App\Http\Middleware\IsOfficerOrAdmin;
+use App\Http\Middleware\TrackUserActivity;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -16,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'isAdmin' => \App\Http\Middleware\IsAdmin::class,
             'isOfficerOrAdmin' => \App\Http\Middleware\IsOfficerOrAdmin::class,
+            TrackUserActivity::class
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

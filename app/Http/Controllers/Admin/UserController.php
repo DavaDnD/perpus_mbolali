@@ -7,27 +7,32 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\cache;
 
 class UserController extends Controller
 {
     // index: normal view OR AJAX (mengembalikan partial rows + pagination)
     public function index(Request $request)
     {
-        $q = $request->input('q', $request->input('search', null));
+        $query = User::query();
 
-        $users = User::when($q, function($query, $q){
-            $query->where('name', 'like', "%{$q}%")
-                ->orWhere('email', 'like', "%{$q}%");
-        })
-            ->orderBy('name')
-            ->paginate(10)
-            ->withQueryString();
+        // Search functionality
+        if ($request->has('q') && $request->q !== '') {
+            $search = $request->q;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
 
-        // selalu pakai expectsJson
-        if ($request->expectsJson()) {
+        $users = $query->paginate(15);
+
+        // Return JSON for AJAX requests
+        if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'rows' => view('admin.users.partials.rows', compact('users'))->render(),
                 'pagination' => view('admin.users.partials.pagination', compact('users'))->render(),
+                'total' => $users->total()
             ]);
         }
 
@@ -110,5 +115,17 @@ class UserController extends Controller
         User::whereIn('id', $ids)->delete();
 
         return response()->json(['message' => 'Selected users deleted.']);
+    }
+
+    public function onlineStatus()
+    {
+        $users = User::all();
+        $status = [];
+
+        foreach ($users as $user) {
+            $status[$user->id] = $user->isOnline();
+        }
+
+        return response()->json($status);
     }
 }
