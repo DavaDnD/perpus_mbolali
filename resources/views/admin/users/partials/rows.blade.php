@@ -28,7 +28,10 @@
                 <span class="text-m365-blue">{{ $user->name }}</span>
             </div>
         </td>
-        <td class="text-secondary">{{ $user->email }}</td>
+        <td class="text-secondary">
+            {{ $user->email }}
+            <i class="bi bi-clipboard ms-1 small copy-email" role="button" title="Copy" data-email="{{ $user->email }}"></i>
+        </td>
         <td>
             <span class="badge {{ $roleBadgeClass }} border border-m365">{{ $user->role }}</span>
         </td>

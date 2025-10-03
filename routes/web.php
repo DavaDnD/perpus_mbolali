@@ -53,7 +53,7 @@ Route::middleware(['auth'])->group(function () {
 // 📌 Officer + Admin
 // ==========================
 Route::middleware(['auth','isOfficerOrAdmin'])->group(function () {
-// CRUD koleksi
+    // CRUD koleksi
     Route::resource('bukus', BukuController::class)->except(['index','show']);
     Route::resource('bukuitems', BukuItemController::class)->except(['index','show']);
     Route::resource('kategoris', KategoriController::class)->except(['index','show']);
@@ -63,18 +63,14 @@ Route::middleware(['auth','isOfficerOrAdmin'])->group(function () {
     Route::resource('penerbits', PenerbitController::class)->except(['index','show']);
 
     // Kelola User (lihat & hapus user)
-         Route::prefix('admin')->name('admin.')->group(function () {
-        Route::get('/users', [AdminController::class, 'users'])->name('users'); // Ganti method juga
-
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/users', [AdminController::class, 'users'])->name('users');
         Route::delete('/users/destroy-selected', [AdminController::class, 'destroySelected'])->name('users.destroySelected');
         Route::post('/users', [AdminController::class, 'store'])->name('users.store');
-
+        Route::get('/users/online-status', [AdminController::class, 'onlineStatus'])->name('users.onlineStatus');
         Route::get('/users/{user}', [AdminController::class, 'show'])->name('users.show');
         Route::put('/users/{user}', [AdminController::class, 'update'])->name('users.update');
         Route::delete('/users/{user}', [AdminController::class, 'destroy'])->name('users.destroy');
-
-             // Route untuk online status
-             Route::get('/users/online-status', [UserController::class, 'onlineStatus'])->name('users.onlineStatus');
     });
 });
 
@@ -85,7 +81,7 @@ Route::middleware(['auth', 'isAdmin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        Route::patch('/users/{user}/role', [UserController::class, 'updateRole'])->name('users.updateRole');
+        // Admin-only routes (jika ada)
     });
 
 require __DIR__.'/auth.php';
