@@ -10,6 +10,7 @@ use App\Http\Controllers\RakController;
 use App\Http\Controllers\LokasiRakController;
 use App\Http\Controllers\PenerbitController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\TatarakController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -53,6 +54,12 @@ Route::middleware(['auth'])->group(function () {
 // 📌 Officer + Admin
 // ==========================
 Route::middleware(['auth','isOfficerOrAdmin'])->group(function () {
+
+    Route::resource('tataraks', TatarakController::class);
+    Route::post('tataraks/{id}/perpanjang', [TatarakController::class, 'perpanjang'])->name('tataraks.perpanjang');
+    Route::get('tataraks-buku-items', [TatarakController::class, 'getBukuItems'])->name('tataraks.getBukuItems');
+    Route::get('tataraks-users', [TatarakController::class, 'getUsers'])->name('tataraks.getUsers');
+
     // CRUD koleksi
     Route::resource('bukus', BukuController::class)->except(['index','show']);
     Route::resource('bukuitems', BukuItemController::class)->except(['index','show']);

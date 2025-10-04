@@ -165,6 +165,14 @@
                         <i class="fas fa-users-cog me-2"></i> Kelola Pengguna
                     </a>
                 </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('tataraks.*') ? 'active' : '' }}"
+                       href="{{ route('tataraks.index') }}">
+                        <i class="bi bi-journal-check me-2"></i>
+                        Penataan Rak
+                    </a>
+                </li>
             @endif
 
         </ul>
