@@ -36,6 +36,7 @@
                 <tr>
                     <th>ID</th>
                     <th>Buku</th>
+                    <th>Eksemplar</th>
                     <th>Rak</th>
                     <th>Kondisi</th>
                     <th>Status</th>
@@ -47,7 +48,8 @@
                     <tr>
                         <td>{{ $item->id }}</td>
                         <td>{{ $item->buku->judul }}</td>
-                        <td>{{ $item->rak->nama }}</td>
+                        <td>{{ $item->barcode }}</td>
+                        <td>{{ $item->rak->barcode }}</td>
                         <td>{{ $item->kondisi }}</td>
                         <td>{{ $item->status }}</td>
                         <td class="text-center">

@@ -10,7 +10,8 @@ use App\Http\Controllers\RakController;
 use App\Http\Controllers\LokasiRakController;
 use App\Http\Controllers\PenerbitController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\TatarakController;
+use App\Http\Controllers\TataraksController;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -37,7 +38,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/bukus/{id_buku}/items', [BukuItemController::class, 'searchByBuku'])->name('bukuitems.searchByBuku');
     Route::get('/kategoris/{id}/subkategoris', [BukuController::class, 'searchByKategori'])->name('bukus.searchByKategori');
     Route::get('/sub_kategoris/{id}/bukus', [BukuController::class, 'searchBySubKategori'])->name('bukus.searchBySubKategori');
-    Route::get('/raks/{id}/bukus', [BukuController::class, 'searchByRak'])->name('bukus.searchByRak');
+    Route::get('/raks/{id}/bukuitems', [BukuItemController::class, 'searchByRak'])->name('bukuitems.searchByRak');
     Route::get('/penerbits/{id}/bukus', [BukuController::class, 'searchByPenerbit'])->name('bukus.searchByPenerbit');
 
     // hanya bisa lihat (index + show)
@@ -54,11 +55,6 @@ Route::middleware(['auth'])->group(function () {
 // 📌 Officer + Admin
 // ==========================
 Route::middleware(['auth','isOfficerOrAdmin'])->group(function () {
-
-    Route::resource('tataraks', TatarakController::class);
-    Route::post('tataraks/{id}/perpanjang', [TatarakController::class, 'perpanjang'])->name('tataraks.perpanjang');
-    Route::get('tataraks-buku-items', [TatarakController::class, 'getBukuItems'])->name('tataraks.getBukuItems');
-    Route::get('tataraks-users', [TatarakController::class, 'getUsers'])->name('tataraks.getUsers');
 
     // CRUD koleksi
     Route::resource('bukus', BukuController::class)->except(['index','show']);
@@ -78,6 +74,13 @@ Route::middleware(['auth','isOfficerOrAdmin'])->group(function () {
         Route::get('/users/{user}', [AdminController::class, 'show'])->name('users.show');
         Route::put('/users/{user}', [AdminController::class, 'update'])->name('users.update');
         Route::delete('/users/{user}', [AdminController::class, 'destroy'])->name('users.destroy');
+        Route::post('tataraks/bulk', [TataraksController::class, 'bulkStore'])->name('tataraks.bulkStore');
+        Route::get('tataraks/preview/{idBuku}', [TataraksController::class, 'preview'])->name('tataraks.preview');
+
+        Route::get('tataraks/available-items', [TataraksController::class, 'availableItems'])->name('tataraks.available-items');
+        Route::delete('tataraks/destroy-selected', [TataraksController::class, 'destroySelected'])->name('tataraks.destroySelected');
+        Route::resource('tataraks', TataraksController::class)
+            ->except(['create', 'edit']);
     });
 });
 

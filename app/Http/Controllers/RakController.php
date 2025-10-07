@@ -10,7 +10,7 @@ use App\Models\Kategori;
 class RakController extends Controller
 {
     public function index() {
-        $raks = Rak::with(['lokasi','kategori'])->get();
+        $raks = Rak::with(['lokasi','kategori'])->withCount('tataraks')->get();
         return view('raks.index', compact('raks'));
     }
 

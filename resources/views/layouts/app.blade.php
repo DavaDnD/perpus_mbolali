@@ -9,7 +9,20 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <!-- Font Awesome 6.5.1 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- jQuery (wajib untuk DataTables dan Select2) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+    <!-- DataTables CSS & JS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/select/1.4.0/js/dataTables.select.min.js"></script> <!-- Untuk multi-select -->
+
+    <!-- Select2 CSS & JS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <!-- QuaggaJS untuk scanner (optional, kalau nggak dipake bisa hapus) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/1.0.0-beta.2/quagga.min.js"></script>
     <style>
 
         .custom-table tbody tr {
@@ -167,10 +180,9 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('tataraks.*') ? 'active' : '' }}"
-                       href="{{ route('tataraks.index') }}">
-                        <i class="bi bi-journal-check me-2"></i>
-                        Penataan Rak
+                    <a href="{{ route('admin.tataraks.index') }}"
+                       class="nav-link {{ request()->is('admin/tataraks*') ? 'active' : '' }}">
+                        <i class="bi bi-journal-check me-2"></i> Penataan Rak
                     </a>
                 </li>
             @endif
@@ -336,7 +348,14 @@
     });
 </script>
 
+--! ini query DataTables.js ----
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 
+--! ini query Select2.js ----
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+---! ini query Quagga.js -----
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/1.0.0-beta.2/quagga.min.js"></script>
 
 </body>
 </html>

@@ -94,6 +94,16 @@ class BukuItemController extends Controller
         return view('bukuitems.index', compact('bukuitems'));
     }
 
+    public function searchByRak($id)
+    {
+        $bukuitems = \App\Models\BukuItem::with(['buku.kategori', 'buku.penerbit', 'rak.lokasi'])
+            ->where('id_rak', $id)
+            ->paginate(10);
+
+        return view('bukuitems.index', compact('bukuitems'));
+    }
+
+
     public function search(Request $request)
     {
         $q = $request->get('q', '');

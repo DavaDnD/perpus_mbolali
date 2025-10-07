@@ -24,5 +24,13 @@ class Rak extends Model
     {
         return $this->belongsTo(Kategori::class, 'id_kategori');
     }
+    public function tataraks()
+    {
+        return $this->hasMany(Tatarak::class, 'id_rak');
+    }
 
+    public function bukuitems()
+    {
+        return $this->hasMany(BukuItem::class, 'id_rak');
+    }
 }

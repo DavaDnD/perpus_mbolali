@@ -34,7 +34,15 @@
                     <td>{{ $rak->nama }}</td>
                     <td>{{ $rak->kolom }}</td>
                     <td>{{ $rak->baris }}</td>
-                    <td>{{ $rak->kapasitas }}</td>
+                    <td>
+                        @php
+                            $percentage = $rak->kapasitas > 0 ? ($rak->tataraks_count / $rak->kapasitas) * 100 : 0;
+                            $badgeColor = $percentage >= 90 ? 'danger' : ($percentage >= 70 ? 'warning' : 'success');
+                        @endphp
+                        <span class="badge bg-{{ $badgeColor }}">
+                        {{ $rak->kapasitas }}/{{ $rak->tataraks_count }}
+                          </span>
+                    </td>
                     <td>{{ $rak->lokasi->ruang ?? '-' }}</td>
                     <td>{{ $rak->kategori->nama ?? '-' }}</td>
                     <td class="text-center">
@@ -48,9 +56,10 @@
                         </form>
                             @endcan
 
-                            <a href="{{ route('bukus.searchByRak', $rak->id) }}" class="btn btn-sm btn-dark">
+                            <a href="{{ route('bukuitems.searchByRak', $rak->id) }}" class="btn btn-sm btn-dark">
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </a>
+
                     </td>
                 </tr>
             @endforeach
